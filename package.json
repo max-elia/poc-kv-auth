@@ -1,0 +1,14 @@
+{
+    "name": "poc-kv-auth",
+    "version": "0.0.1",
+    "description": "Proof of concept for registering, logging in and sessioning users on Cloudflare KV",
+    "scripts": {
+        "dev": "wrangler pages dev public --kv KV_AUTH --persist --live-reload"
+    },
+    "author": "Max Elia",
+    "devDependencies": {
+        "eslint": "^8.34.0",
+        "eslint-config-prettier": "^8.6.0"
+    },
+    "type": "module"
+}

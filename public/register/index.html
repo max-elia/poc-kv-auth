@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/main.css" />
+        <title>POC | Cloudflare KV Auth</title>
+    </head>
+    <body>
+        <form action="/auth/register" method="POST" onsubmit="return validatePassword()">
+            <h2>Register</h2>
+            <input type="text" name="username" id="username" placeholder="Username" />
+            <input type="password" name="password" id="password" placeholder="Password" />
+            <input type="password" name="confirm" id="confirm" placeholder="Confirm Password" />
+            <span style="font-size: 12px"
+                >Already registered?<br /><a href="/login">Log in here</a></span
+            >
+            <input type="submit" name="submit" value="Register" />
+        </form>
+        <script>
+            function validatePassword() {
+                try {
+                    const usernameInput = document.getElementById("username").value;
+                    const passwordInput = document.getElementById("password").value;
+                    // Validate the form input fields
+                    if (usernameInput.trim() === "") {
+                        alert("Please enter a username.");
+                        return false;
+                    }
+
+                    if (passwordInput.trim() === "") {
+                        alert("Please enter a password.");
+                        return false;
+                    }
+                    // Check if password is at least 8 characters long and contains at least one uppercase letter, one lowercase letter, and one number or special character
+                    if (
+                        !passwordInput.match(
+                            /^(?=.*[a-zA-Z])(?=.*[0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/
+                        )
+                    ) {
+                        alert(
+                            "Password must be at least 8 characters long and contain at least one special character."
+                        );
+                        return false;
+                    }
+                    // Check if password and confirmPassword match
+                    const confirmInput = document.getElementById("confirm").value;
+                    if (passwordInput != confirmInput) {
+                        alert("Passwords do not match.");
+                        return false;
+                    }
+                    // Check if user wants to continue with confirmation
+                    if (
+                        !confirm(`Please do not enter any REAL sensitive information.
+This is a proof of concept which is probably not secure.
+Do you wish to continue?`)
+                    ) {
+                        return false;
+                    }
+                    return true;
+                } catch (error) {
+                    console.error(error);
+                    return false;
+                }
+            }
+        </script>
+    </body>
+</html>

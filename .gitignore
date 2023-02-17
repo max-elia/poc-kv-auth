@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+/package
+.env
+.env.*
+!.env.example
+.wrangler
+package-lock.json
