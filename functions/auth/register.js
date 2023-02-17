@@ -4,16 +4,24 @@ export async function onRequestPost(context) {
     try {
         const body = await readRequestBody(request);
 
-        const username = body.username;
+        const email = body.email;
         const password = body.password;
 
         const pepper = await env.SECRET;
 
         const hash = await hashPw(password, pepper);
-        if (await env.KV_AUTH.get(`user:${username}`)) {
-            throw new Error("Username already exists");
+        if (await env.KV_AUTH.get(`user:${email}`)) {
+            throw new Error("This E-Mail is already registered");
         }
-        await env.KV_AUTH.put(`user:${username}`, hash);
+        await env.KV_AUTH.put(
+            `user:${email}`,
+            JSON.stringify({
+                token: hash,
+                email,
+                firstname: body.firstname ? body.firstname : "",
+                lastname: body.lastname ? body.lastname : "",
+            })
+        );
 
         return new Response(null, {
             status: 302,

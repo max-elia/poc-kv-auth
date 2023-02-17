@@ -42,7 +42,8 @@ git clone https://github.com/max-elia/poc-kv-auth.git
 ```
 
 **Step 1**: Install wrangler
-[]()
+[Instructions here](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
+
 **Step 2**: Install dependencies
 
 ```bash

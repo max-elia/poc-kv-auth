@@ -5,11 +5,11 @@ export async function onRequest(context) {
 
         // Get session_id from cookie.
         const session_id = cookie.split("session_id=")[1].split(";")[0];
-        console.log(session_id);
         if (session_id) {
-            // Get session_id from KV.
-            const user = await env.KV_AUTH.get(`session_id:${session_id}`);
-
+            // Get User Email from session_id KV
+            const userEmail = await env.KV_AUTH.get(`session_id:${session_id}`);
+            // Get User object
+            const user = await env.KV_AUTH.get(`user:${userEmail}`, "json");
             if (user) {
                 // Cookie is valid. Continue to protected route.
                 const html = await next();
@@ -17,10 +17,12 @@ export async function onRequest(context) {
                 const result = await new HTMLRewriter()
                     .on("#user", {
                         element(element) {
-                            element.setInnerContent(`Hello, ${user}!`);
+                            element.setInnerContent(`Hello, ${user.firstname ? user.firstname : user.email}!`);
                         },
                     })
                     .transform(html);
+                // Add no-cache headers
+                result.headers.set("Cache-Control", "no-cache no-store must-revalidate");
                 return result;
             }
         }

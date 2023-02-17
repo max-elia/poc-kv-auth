@@ -1,20 +1,24 @@
-const COOKIE_TTL = 60 * 60 * 24 * 7;
+const COOKIE_TTL = 60 * 60 * 24 * 7; // After 7 days session KV entry will be deleted.
 
 export async function onRequestPost(context) {
     const { env, request } = context;
 
     try {
-        const body = await request.formData();
-        const username = await body.get("username");
-        const password = await body.get("password");
+        const body = await readRequestBody(request);
+        const email = body.email;
+        const password = body.password;
 
         const pepper = await env.SECRET;
-        const hash = await env.KV_AUTH.get(`user:${username}`);
+        const user = await env.KV_AUTH.get(`user:${email}`, "json");
+        if (!user) {
+            throw new Error("E-Mail or password is incorrect");
+        }
+        const hash = user.token;
 
         if (await verifyPw(hash, password, pepper)) {
             const session_id = crypto.randomUUID();
 
-            await env.KV_AUTH.put(`session_id:${session_id}`, username, {
+            await env.KV_AUTH.put(`session_id:${session_id}`, email, {
                 expirationTtl: COOKIE_TTL,
             });
 
@@ -27,8 +31,9 @@ export async function onRequestPost(context) {
                 },
             });
         }
-        throw new Error("Username or password is incorrect");
+        throw new Error("E-Mail or password is incorrect");
     } catch (e) {
+        console.log(e.message);
         return new Response(e.message, {
             status: 302,
             statusText: "User registration failed",
@@ -78,4 +83,19 @@ function areUint8ArraysEqual(a, b) {
         }
     }
     return true;
+}
+
+async function readRequestBody(request) {
+    const contentType = request.headers.get("content-type");
+    if (contentType.includes("application/json")) {
+        return await request.json();
+    } else if (contentType.includes("form")) {
+        const formData = await request.formData();
+        const body = {};
+        for (const entry of formData.entries()) {
+            body[entry[0]] = entry[1];
+        }
+        return body;
+    }
+    throw new Error("Content-Type not supported");
 }
