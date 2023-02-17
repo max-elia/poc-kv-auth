@@ -2,9 +2,10 @@ export async function onRequestPost(context) {
     const { env, request } = context;
 
     try {
-        const body = await request.formData();
-        const username = await body.get("username");
-        const password = await body.get("password");
+        const body = await readRequestBody(request);
+
+        const username = body.username;
+        const password = body.password;
 
         const pepper = await env.SECRET;
 
@@ -56,4 +57,19 @@ async function hashPw(password, pepper) {
 
     // Return combined hash as base64 string
     return btoa(new Uint8Array(combinedHash).reduce((s, b) => s + String.fromCharCode(b), ""));
+}
+
+async function readRequestBody(request) {
+    const contentType = request.headers.get("content-type");
+    if (contentType.includes("application/json")) {
+        return await request.json();
+    } else if (contentType.includes("form")) {
+        const formData = await request.formData();
+        const body = {};
+        for (const entry of formData.entries()) {
+            body[entry[0]] = entry[1];
+        }
+        return body;
+    }
+    throw new Error("Content-Type not supported");
 }
