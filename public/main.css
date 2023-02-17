@@ -38,6 +38,7 @@ form {
     justify-content: center;
     align-items: center;
     padding: 2rem;
+    color: #333;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     width: 30%;
