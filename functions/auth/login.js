@@ -33,7 +33,6 @@ export async function onRequestPost(context) {
         }
         throw new Error("E-Mail or password is incorrect");
     } catch (e) {
-        console.log(e.message);
         return new Response(e.message, {
             status: 302,
             statusText: "User registration failed",
