@@ -1,7 +1,10 @@
 # Cloudflare KV-Auth
 
 This is an example of how one could use Cloudflare's distributed and fast KV data store together with Cloudflare Pages as a user authentication method.
+
 This is a Proof of concept so DO NOT USE IT FOR PRODUCTION.
+
+Since data is replicated around the world in KV, this method is also not EU GDPR compliant.
 
 ## 🚀 Demo
 
@@ -9,7 +12,7 @@ This is a Proof of concept so DO NOT USE IT FOR PRODUCTION.
 
 ## 📃 Documentation
 
-Generally it is not recommended to store users passwords and you should avoid it as much as possible, by instead using OAuth Providers or using E-Mail Sign in with magic-links.
+**Generally it is not recommended to store user's passwords and you should avoid it as much as possible, by instead using OAuth Providers or using E-Mail Sign in with magic-links.**
 
 Pages comes with a feature called Pages functions where you can execute server-side code on the edge. The KV data store is directly available to those Pages functions.
 This projects consists of two root folders:
@@ -26,22 +29,17 @@ The `/function/protected/_middleware.js` function checks for a valid `session_id
 
 ## 👩‍💻 Setup in Cloudflare
 
-**Step 0**: Fork repository (or create own)
-
-**Step 1**: Create New Pages project in Cloudflare dashboard and connect to repo
-
-**Step 2**: Set **Build output directory**: to 'public'. Leave **Build command** blank.
-
-**Step 3**: Generate secure token
+1. Fork repository (or create own)
+2. Create New Pages project in Cloudflare dashboard and connect to repo
+3. Set **Build output directory**: to 'public'. Leave **Build command** blank.
+4. Generate secure token
 
 ```bash
 openssl rand -base64 32
 ```
 
-**Step 4**: Create environment variable **'SECRET'** in dashboard and paste secure token. _You should also hit the encrypt button so not even you but only your functions have access to the secret_
-
-**Step 5**
-Trigger new Deployment with a commit to the repository or from the dashboard.
+5. Create environment variable **'SECRET'** in dashboard and paste secure token. _You should also hit the encrypt button so not even you but only your functions have access to the secret_
+6. Trigger new Deployment with a commit to the repository or from the dashboard.
 
 ## 🛠️ Development (local)
 
